@@ -1,10 +1,13 @@
 import { createApp } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
 import "./style.css";
+import routes from "./route/route";
+
 import App from "./App.vue";
-import router from "./router";
 
-const app = createApp(App);
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
 
-app.use(router);
-
-app.mount("#app");
+createApp(App).use(router, axios).mount("#app");

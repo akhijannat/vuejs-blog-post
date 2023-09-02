@@ -1,48 +1,39 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { defineProps } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 
-const readMoreBtn =
-  "mt-4 bg-gradient-to-r from-pink-400 via-red-600 to-yellow-600 text-white px-4 py-2 rounded-tl-[20px] rounded-br-[20px]";
+defineProps(["posts"]);
 
-const router = useRouter();
-
-const posts = ref([]);
-
-const fetchPosts = async () => {
-  try {
-    const response = await axios.get(
-      "https://basic-blog.teamrabbil.com/api/post-newest"
-    );
-    posts.value = response.data;
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-  }
-};
-
-onMounted(() => {
-  fetchPosts();
-});
-
-const goToPostDetail = (postId) => {
-  router.push({ name: "post", params: { id: postId } });
-};
+const route = useRoute();
 </script>
 
 <template>
-  <section class="w-4/5 mx-auto my-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div
-        v-for="post in posts"
-        :key="post.id"
-        class="p-4 rounded shadow border"
-      >
-        <h2 class="text-xl font-semibold">{{ post.title }}</h2>
-        <p class="mt-5 text-sm italic">{{ post.short }}...</p>
-        <button @click="goToPostDetail(post.id)" :class="readMoreBtn">
-          Read More
-        </button>
+  <div class="mb-5 text-center">
+    <h2
+      class="font-bold inline-block py-3 px-7 bg-gradient-to-r from-pink-400 to-yellow-600 text-white hover:text-white rounded"
+    >
+      {{ route.params.category ?? "সাম্প্রতিক বিষয় সমূহ" }}
+    </h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 p-3 gap-6">
+    <div
+      :to="`/post-details/${post.id}`"
+      class="rounded-b-lg shadow"
+      v-for="(post, index) in posts"
+      :key="index"
+    >
+      <img :src="post.img" class="rounded-t-lg max-h-[220px]" alt="" />
+      <div class="px-3 pb-3">
+        <h3 class="py-3 font-bold">{{ post.title }}</h3>
+        <p>{{ post.short }}</p>
+        <RouterLink
+          :to="`/post-details/${post.id}`"
+          class="text-sm inline-block py-1 px-3 mt-3 bg-yellow-600 text-white hover:text-white rounded"
+          >আরো জানুন</RouterLink
+        >
       </div>
     </div>
-  </section>
+  </div>
 </template>
+
+<style scoped></style>

@@ -1,13 +1,13 @@
 <script setup>
 import { RouterView } from "vue-router";
-import Header from "./components/Header.vue";
-import Footer from "./components/Footer.vue";
+import Header from "./components/HeaderView.vue";
 </script>
 
 <template>
   <Header />
-  <RouterView />
-  <Footer />
+  <div class="container mx-auto my-10">
+    <RouterView></RouterView>
+  </div>
 </template>
 
 <style scoped></style>

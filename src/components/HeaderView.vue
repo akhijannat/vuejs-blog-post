@@ -1,21 +1,28 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 
-const navLink = "ease-in duration-300 text-sm py-1 px-3 hover:text-[#e8505b]";
-
 const route = useRoute();
-const isActive = (routePath) => {
-  return route.path === routePath
-    ? "bg-gradient-to-r from-pink-400 to-yellow-600 text-white hover:text-white rounded-tr-[20px] rounded-bl-[20px]"
-    : "";
-};
+
+let menuItems = ref(null);
+
+onMounted(async () => {
+  await axios
+    .get("https://basic-blog.teamrabbil.com/api/post-categories")
+    .then(function (response) {
+      menuItems.value = response.data;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+});
 
 const mobileMenuOpen = ref(false);
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value;
 };
 </script>
+
 <template>
   <header class="bg-white py-4 sticky top-0 shadow-sm">
     <div class="container mx-auto px-4 lg:px-10">
@@ -29,6 +36,7 @@ const toggleMobileMenu = () => {
             BLOG
           </h1>
         </RouterLink>
+
         <button
           @click="toggleMobileMenu"
           class="absolute top-0 right-0 ml-auto text-gray-500 focus:outline-none md:hidden"
@@ -66,34 +74,31 @@ const toggleMobileMenu = () => {
 
         <div
           :class="mobileMenuOpen ? 'flex' : 'hidden'"
-          class="flex-col md:flex md:flex-row lg:text-xl font-bold md:items-center"
+          class="flex-col md:flex md:flex-row md:items-center"
         >
-          <RouterLink to="/" :class="[navLink, isActive('/')]">Home</RouterLink>
-          <RouterLink to="/library" :class="[navLink, isActive('/library')]"
-            >Library</RouterLink
-          >
-          <RouterLink to="/history" :class="[navLink, isActive('/history')]"
-            >History</RouterLink
-          >
-          <RouterLink to="/sport" :class="[navLink, isActive('/sport')]"
-            >Sport</RouterLink
-          >
           <RouterLink
-            to="/bangladesh"
-            :class="[navLink, isActive('/bangladesh')]"
-            >Bangladesh</RouterLink
+            to="/"
+            class="ease-in duration-300 text-sm py-1 px-3 hover:text-[#e8505b]"
+            :class="
+              route.name == 'home'
+                ? 'bg-gradient-to-r from-pink-400 to-yellow-600 text-white hover:text-white rounded-tr-[20px] rounded-bl-[20px]'
+                : ''
+            "
           >
-          <RouterLink to="/science" :class="[navLink, isActive('/science')]"
-            >Science</RouterLink
-          >
-          <RouterLink to="/biography" :class="[navLink, isActive('/biography')]"
-            >Biography</RouterLink
-          >
-          <RouterLink to="/lifestyle" :class="[navLink, isActive('/lifestyle')]"
-            >Lifestyle</RouterLink
-          >
-          <RouterLink to="/fable" :class="[navLink, isActive('/fable')]"
-            >Fable</RouterLink
+            হোম
+          </RouterLink>
+
+          <RouterLink
+            :to="`/post/${menu.name}/${menu.id}`"
+            class="ease-in duration-300 text-sm py-1 px-3 hover:text-[#e8505b]"
+            :class="
+              route.params.category == menu.name
+                ? 'bg-gradient-to-r from-pink-400 to-yellow-600 text-white hover:text-white rounded-tr-[20px] rounded-bl-[20px]'
+                : ''
+            "
+            v-for="(menu, index) in menuItems"
+            :key="index"
+            >{{ menu.name }}</RouterLink
           >
         </div>
 
